@@ -1,0 +1,1942 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FWConvert - Firewall Policy Converter</title>
+    <!-- Modern Premium Google Font -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1a1a1c;
+            /* Premium clean dark gray */
+            --panel-bg: rgba(40, 40, 43, 0.65);
+            /* Translucent sleek premium gray glass */
+            --border-color: rgba(255, 255, 255, 0.08);
+            /* More visible frosty border */
+            --border-inner: rgba(255, 255, 255, 0.05);
+            --text-primary: #f9fafb;
+            /* Premium clean off-white */
+            --text-secondary: #9ca3af;
+            /* Soft tech gray */
+            --accent-primary: #3b82f6;
+            /* Minimal cobalt blue */
+            --accent-success: #34d399;
+            /* Soft emerald */
+            --accent-danger: #f87171;
+            /* Soft coral */
+            --glass-blur: blur(35px);
+            --shadow-premium: 0 12px 48px rgba(0, 0, 0, 0.45);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            font-size: 0.8rem;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.015) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.01) 0%, transparent 45%);
+            background-attachment: fixed;
+        }
+
+        #main-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 1.25rem;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            border-bottom: 1px solid var(--border-inner);
+            padding-bottom: 0.75rem;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 24px;
+            height: 24px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #fff;
+        }
+
+        .logo-title h1 {
+            font-size: 1.3rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+        }
+
+        .logo-title p {
+            font-size: 0.62rem;
+            color: var(--text-secondary);
+        }
+
+        .status-badge {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+            padding: 0.2rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.68rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            text-decoration: none;
+            transition: all 0.2s ease;
+        }
+
+        .status-badge:hover {
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .status-dot {
+            width: 4px;
+            height: 4px;
+            background-color: var(--text-secondary);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* Tab Navigation */
+        .tabs {
+            display: flex;
+            gap: 0.25rem;
+            margin-bottom: 1.25rem;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 0.15rem;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            width: fit-content;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.35rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-primary);
+        }
+
+        .tab-btn.active {
+            background: rgba(255, 255, 255, 0.06);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Frosty Glass Panel */
+        .glass-panel {
+            background: var(--panel-bg);
+            backdrop-filter: var(--glass-blur);
+            -webkit-backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: var(--shadow-premium);
+        }
+
+        /* TOP IMPORT BAR - STYLISH & MINIMAL */
+        .top-import-bar {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            margin-bottom: 1.25rem;
+            background: rgba(40, 40, 43, 0.5);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-premium);
+        }
+
+        .import-group {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .import-group label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        /* HIGH-END MINIMAL SELECT STYLING */
+        select {
+            background: rgba(40, 40, 43, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 5px;
+            color: var(--text-primary);
+            padding: 0.3rem 1.5rem 0.3rem 0.5rem;
+            font-size: 0.78rem;
+            font-family: inherit;
+            font-weight: 500;
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.4rem center;
+            background-size: 0.8em;
+        }
+
+        select:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background-color: rgba(255, 255, 255, 0.03);
+        }
+
+        select option {
+            background-color: #2c2c2e;
+            color: var(--text-primary);
+        }
+
+        /* Inputs & Elegant Buttons */
+        input[type="text"] {
+            background: rgba(40, 40, 43, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 5px;
+            color: var(--text-primary);
+            padding: 0.3rem 0.5rem;
+            font-size: 0.75rem;
+            font-family: inherit;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input[type="text"]:focus {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: rgba(17, 24, 39, 0.9);
+        }
+
+        .file-selector-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            padding: 0.3rem 0.6rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .file-selector-btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 255, 255, 0.18);
+        }
+
+        .btn {
+            background: #2563eb;
+            border: 1.5px solid #3b82f6;
+            border-radius: 5px;
+            color: #ffffff;
+            padding: 0.35rem 1.25rem;
+            font-size: 0.78rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            white-space: nowrap;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn:hover {
+            background: #1d4ed8;
+            border-color: #2563eb;
+            transform: translateY(-0.5px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+        }
+
+        /* Workspace Grid */
+        .workspace-grid {
+            display: grid;
+            grid-template-columns: 1fr 440px;
+            gap: 1rem;
+            align-items: start;
+        }
+
+        /* Elegant Table Design */
+        .table-container {
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.15);
+            height: 580px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.76rem;
+        }
+
+        th {
+            background: rgba(40, 40, 43, 0.98);
+            padding: 0.5rem 0.6rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 0.45rem 0.6rem;
+            border-bottom: 1px solid var(--border-inner);
+            word-break: break-all;
+        }
+
+        tr:hover {
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        /* FILTER ROW */
+        .filter-row th {
+            background: rgba(40, 40, 43, 0.95);
+            padding: 0.25rem;
+            position: sticky;
+            top: 27px;
+            z-index: 10;
+        }
+
+        .col-filter {
+            width: 100%;
+            font-size: 0.7rem;
+            padding: 0.18rem 0.3rem;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: 4px;
+            background: rgba(40, 40, 43, 0.8);
+            color: var(--text-primary);
+        }
+
+        /* Soft Minimalist Badges */
+        .badge-action {
+            display: inline-block;
+            padding: 0.12rem 0.35rem;
+            border-radius: 4px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-action.allow {
+            background: rgba(52, 211, 153, 0.06);
+            color: var(--accent-success);
+            border: 1px solid rgba(52, 211, 153, 0.15);
+        }
+
+        .badge-action.deny {
+            background: rgba(248, 113, 113, 0.06);
+            color: var(--accent-danger);
+            border: 1px solid rgba(248, 113, 113, 0.15);
+        }
+
+        .object-tag {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 0.06rem 0.2rem;
+            border-radius: 3px;
+            font-size: 0.68rem;
+            display: inline-block;
+            margin: 1px;
+            color: #d1d5db;
+        }
+
+        /* CONVERSION PANE */
+        .convert-pane {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            background: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem;
+            height: 580px;
+        }
+
+        .convert-pane-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-inner);
+            padding-bottom: 0.4rem;
+        }
+
+        .convert-title {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .code-output-container {
+            flex: 1;
+            background: #242426;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            padding: 0.6rem;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .code-output {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            line-height: 1.45;
+            color: #e5e7eb;
+            /* High class white code text */
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .convert-instruction {
+            color: var(--text-secondary);
+            font-size: 0.72rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.3rem;
+            right: 0.3rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-secondary);
+            font-size: 0.65rem;
+            padding: 0.12rem 0.3rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+
+        .copy-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Documentation & Instruction Guides */
+        .guides-container {
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 1rem;
+            min-height: 400px;
+        }
+
+        .guides-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 0.2rem;
+            border-right: 1px solid var(--border-inner);
+            padding-right: 0.5rem;
+        }
+
+        .guide-menu-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.4rem 0.6rem;
+            border-radius: 5px;
+            text-align: left;
+            font-size: 0.76rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .guide-menu-btn:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .guide-menu-btn.active {
+            background: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+            border-left: 2px solid var(--text-secondary);
+            border-radius: 0 5px 5px 0;
+            font-weight: 600;
+        }
+
+        .guide-content-area {
+            padding-left: 0.5rem;
+        }
+
+        .guide-block {
+            display: none;
+        }
+
+        .guide-block.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .guide-block h3 {
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .guide-section {
+            margin-bottom: 1rem;
+        }
+
+        .guide-section h4 {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            color: #ffffff;
+        }
+
+        .guide-section p {
+            font-size: 0.76rem;
+            color: var(--text-secondary);
+            line-height: 1.4;
+            margin-bottom: 0.4rem;
+        }
+
+        .code-box {
+            background: #242426;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 5px;
+            padding: 0.6rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--accent-success);
+            white-space: pre-wrap;
+            position: relative;
+            margin-bottom: 0.6rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="main-container">
+        <!-- Dashboard Header -->
+        <header>
+            <div class="logo-area">
+                <div class="logo-icon">⇄</div>
+                <div class="logo-title">
+                    <h1>FWConvert</h1>
+                    <p>Firewall Policy Converter</p>
+                </div>
+            </div>
+            <a href="https://senaperdiana.com" target="_blank" class="status-badge">
+                <span class="status-dot"></span>
+                <span>senaperdiana.com</span>
+            </a>
+        </header>
+
+        <!-- Dynamic Main Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('dashboard')">Converter Dashboard</button>
+            <button class="tab-btn" onclick="switchTab('guides')">Export & Import Guides</button>
+        </div>
+
+        <!-- TAB 1: Converter Dashboard -->
+        <div id="dashboard-tab" class="tab-content active">
+            <!-- TOP IMPORT BAR - HIGH END MINIMAL -->
+            <div class="top-import-bar">
+                <div class="import-group">
+                    <label for="firewall-type">Source Brand</label>
+                    <select id="firewall-type">
+                        <option value="fortigate" selected>FortiGate (CLI Export)</option>
+                        <option value="checkpoint">Check Point (SmartConsole CSV)</option>
+                        <option value="paloalto">Palo Alto (XML Export)</option>
+                        <option value="ftd">Cisco FTD (FMC Export)</option>
+                        <option value="asa">Cisco ASA (CLI Export)</option>
+                    </select>
+                </div>
+
+                <div class="import-group">
+                    <label>Import Config</label>
+                    <button class="file-selector-btn" onclick="document.getElementById('file-input').click()">Choose
+                        File</button>
+                    <input type="file" id="file-input" style="display:none" onchange="handleFileSelect(this)">
+                </div>
+
+                <button class="btn" id="parse-button" onclick="submitParse()">
+                    <span>Execute</span>
+                </button>
+                <span id="file-name-display"
+                    style="font-size: 0.75rem; color: var(--accent-success); font-weight: 500; display:none; max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-left: 0.5rem;"></span>
+
+                <!-- DROPDOWN BUTTON FOR SAMPLES SELECTOR PUSHED TO THE RIGHT -->
+                <div class="import-group" style="margin-left: auto;">
+                    <label>Load Sample</label>
+                    <select id="sample-select" onchange="loadSelectedSample(this)"
+                        style="border-color: rgba(255, 255, 255, 0.08); font-weight: normal; color: var(--text-secondary);">
+                        <option value="" disabled selected>Select Sample...</option>
+                        <option value="fortigate">FortiGate (CLI)</option>
+                        <option value="checkpoint">Check Point (CSV)</option>
+                        <option value="paloalto">Palo Alto (XML)</option>
+                        <option value="ftd">Cisco FTD (JSON)</option>
+                        <option value="asa">Cisco ASA (CLI)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Workspace Columns -->
+            <div class="workspace-grid">
+                <!-- Left Pane: Grid Table -->
+                <div class="glass-panel" style="padding: 0.75rem;">
+                    <!-- TABLE HEADER CONTROL SWITCHER -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; border-bottom: 1px solid var(--border-inner); padding-bottom: 0.4rem;">
+                        <span style="font-weight: 600; font-size: 0.85rem; color: var(--text-primary);">Policy
+                            Rulebase</span>
+                        <div class="tabs" style="margin-bottom: 0; padding: 0.15rem; background: rgba(0,0,0,0.03);">
+                            <button class="tab-btn active" id="view-security-btn" onclick="setViewMode('security')"
+                                style="padding: 0.2rem 0.5rem; font-size: 0.7rem;">Security Rules</button>
+                            <button class="tab-btn" id="view-nat-btn" onclick="setViewMode('nat')"
+                                style="padding: 0.2rem 0.5rem; font-size: 0.7rem;">NAT Rules</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table id="policy-table">
+                            <thead>
+                                <tr id="table-headers-row">
+                                    <th style="width: 50px;">ID</th>
+                                    <th>Name</th>
+                                    <th>Src Zone</th>
+                                    <th>Src Address</th>
+                                    <th>Dst Address</th>
+                                    <th>Services</th>
+                                    <th style="width: 70px;">Action</th>
+                                </tr>
+                                <tr class="filter-row" id="table-filters-row">
+                                    <th><input type="text" class="col-filter" id="filter-id" list="dl-id"
+                                            placeholder="ID..." oninput="filterRules()"></th>
+                                    <th><input type="text" class="col-filter" id="filter-name" list="dl-name"
+                                            placeholder="Name..." oninput="filterRules()"></th>
+                                    <th><input type="text" class="col-filter" id="filter-srczone" list="dl-srczone"
+                                            placeholder="Zone..." oninput="filterRules()"></th>
+                                    <th><input type="text" class="col-filter" id="filter-srcaddr" list="dl-srcaddr"
+                                            placeholder="Source..." oninput="filterRules()"></th>
+                                    <th><input type="text" class="col-filter" id="filter-dstaddr" list="dl-dstaddr"
+                                            placeholder="Dest..." oninput="filterRules()"></th>
+                                    <th><input type="text" class="col-filter" id="filter-services" list="dl-services"
+                                            placeholder="Port..." oninput="filterRules()"></th>
+                                    <th><input type="text" class="col-filter" id="filter-action" list="dl-action"
+                                            placeholder="Action..." oninput="filterRules()"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="policy-rows">
+                                <tr>
+                                    <td colspan="7"
+                                        style="text-align: center; color: var(--text-secondary); padding: 4rem 1rem;">
+                                        No configuration normalized yet. Use the top bar to import a firewall config
+                                        file.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Right Pane: Export / Brand Conversion -->
+                <div class="convert-pane">
+                    <div class="convert-pane-header">
+                        <div class="convert-title">Export / Convert Config</div>
+                        <div style="width: 140px;">
+                            <select id="target-brand" onchange="convertRules()">
+                                <option value="yaml" selected>Normalized YAML</option>
+                                <option value="fortigate">FortiGate CLI</option>
+                                <option value="checkpoint">Check Point CLI</option>
+                                <option value="paloalto">Palo Alto Sets</option>
+                                <option value="ftd">Cisco FTD FMC JSON</option>
+                                <option value="asa">Cisco ASA CLI</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="code-output-container">
+                        <button class="copy-btn" onclick="copyConvertedText()">Copy</button>
+                        <pre class="code-output"
+                            id="converted-code-box"><span class="convert-instruction">Import a config first to convert.</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 2: Export & Import Guides -->
+        <div id="guides-tab" class="tab-content">
+            <div class="glass-panel guides-container">
+                <div class="guides-menu">
+                    <button class="guide-menu-btn active" onclick="switchGuide(this, 'guide-fortigate')">FortiGate</button>
+                    <button class="guide-menu-btn" onclick="switchGuide(this, 'guide-checkpoint')">Check Point</button>
+                    <button class="guide-menu-btn" onclick="switchGuide(this, 'guide-paloalto')">Palo Alto</button>
+                    <button class="guide-menu-btn" onclick="switchGuide(this, 'guide-ftd')">Cisco FTD / FMC</button>
+                    <button class="guide-menu-btn" onclick="switchGuide(this, 'guide-asa')">Cisco ASA</button>
+                </div>
+
+                <div class="guide-content-area">
+                    <!-- Cisco ASA -->
+                    <div id="guide-asa" class="guide-block">
+                        <h3>Cisco ASA Integration Guide</h3>
+                        <div class="guide-section">
+                            <h4>How to Export Config & NAT</h4>
+                            <p>To export the full configuration, including access lists and NAT policies:</p>
+                            <div class="code-box"><button class="copy-btn" onclick="copyText(this)">Copy</button>enable
+show running-config</div>
+                            <p>To extract <strong>NAT rules only</strong> separately:</p>
+                            <div class="code-box"><button class="copy-btn" onclick="copyText(this)">Copy</button>show running-config nat</div>
+                        </div>
+                        <div class="guide-section">
+                            <h4>How to Import / Apply Rules & NAT</h4>
+                            <p>To apply new security rules or NAT rules, enter configuration terminal mode:</p>
+                            <div class="code-box"><button class="copy-btn" onclick="copyText(this)">Copy</button>configure terminal
+! Add access rules:
+access-list inside_in extended permit tcp any host 10.0.0.1 eq 80
+! Add Source/Destination NAT rules:
+nat (inside,outside) source dynamic Any interface</div>
+                        </div>
+                    </div>
+
+                    <!-- Check Point -->
+                    <div id="guide-checkpoint" class="guide-block">
+                        <h3>Check Point Integration Guide</h3>
+                        <div class="guide-section">
+                            <h4>How to Export Policy & NAT (Separate Steps)</h4>
+                            <p>In Check Point SmartConsole, security rules and address translation (NAT) rules exist in
+                                different layers and require separate exports:</p>
+                            <p><strong>Step 1: Export Security Rules:</strong><br>
+                                1. Go to <strong>Security Policies</strong> &gt; <strong>Access Control</strong> &gt; <strong>Policy</strong>.<br>
+                                2. Click the <strong>Actions</strong> dropdown menu (gear icon in table grid top right) &gt; Select
+                                <strong>Export to CSV...</strong>.
+                            </p>
+                            <p><strong>Step 2: Export NAT Rules (Separate Tab):</strong><br>
+                                1. Go to <strong>Security Policies</strong> &gt; <strong>Access Control</strong> &gt; <strong>NAT</strong> (located in the left
+                                sidebar menu directly below Policy).<br>
+                                2. Click the <strong>Actions</strong> dropdown menu on the NAT rule grid &gt; Select <strong>Export to
+                                CSV...</strong> to retrieve the separate address translation matrix.
+                            </p>
+                        </div>
+                        <div class="guide-section">
+                            <h4>How to Import / Apply Rules & NAT</h4>
+                            <p>Use Gaia Management CLI (<code>mgmt_cli</code>) commands to apply security policies and NAT rules
+                                separately:</p>
+                            <div class="code-box"><button class="copy-btn" onclick="copyText(this)">Copy</button>! Add Access Rules:
+mgmt_cli add access-rule layer "Network" position 1 name "Web_Access" source "Any" destination "WebServer" action "Accept" --port 19009
+
+! Add NAT Rules (Separate CLI command):
+mgmt_cli add nat-rule package "Standard" position 1 original-source "Any" translated-source "Translated_IP" method "dynamic" --port 19009</div>
+                        </div>
+                    </div>
+
+                    <!-- FortiGate -->
+                    <div id="guide-fortigate" class="guide-block active">
+                        <h3>FortiGate Integration Guide</h3>
+                        <div class="guide-section">
+                            <h4>How to Export Config & NAT</h4>
+                            <p>To export access policies and custom Virtual IPs (Destination NAT) / Central SNAT tables:
+                            </p>
+                            <div class="code-box"><button class="copy-btn" onclick="copyText(this)">Copy</button>show firewall policy
+show firewall vip
+show firewall central-snat-map</div>
+                        </div>
+                        <div class="guide-section">
+                            <h4>How to Import / Apply Rules & NAT</h4>
+                            <p>Paste the corresponding configuration blocks into your FortiOS terminal:</p>
+                            <div class="code-box"><button class="copy-btn" onclick="copyText(this)">Copy</button>! Configure Destination NAT (Virtual IP):
+config firewall vip
+    edit "Web_VIP"
+        set extip 203.0.113.100
+        set mappedip 192.168.1.100
+    next
+end
+
+! Configure Policy (with NAT enabled):
+config firewall policy
+    edit 0
+        set srcintf "any"
+        set dstintf "any"
+        set srcaddr "all"
+        set dstaddr "Web_VIP"
+        set action accept
+        set service "HTTP"
+        set nat enable
+    next
+end</div>
+                        </div>
+                    </div>
+
+                    <!-- Palo Alto -->
+                    <div id="guide-paloalto" class="guide-block">
+                        <h3>Palo Alto Integration Guide</h3>
+                        <div class="guide-section">
+                            <h4>How to Export Config</h4>
+                            <p>To export the full XML configuration package containing address lists, groups, custom
+                                services, and security rules from PAN-OS:</p>
+                            <p>1. Log in to the Palo Alto Networks Web GUI.<br>
+                                2. Navigate to <strong>Device</strong> &gt; <strong>Setup</strong> &gt; <strong>Operations</strong>.<br>
+                                3. Under the <em>Configuration Management</em> section, click <strong>Export named configuration
+                                snapshot</strong>.<br>
+                                4. Select <strong>running-config.xml</strong> or the active configuration file and click <strong>OK</strong> to
+                                download.
+                            </p>
+                        </div>
+                        <div class="guide-section">
+                            <h4>How to Import / Apply Rules</h4>
+                            <p>To import new rules or definitions, import the XML config snapshot under <strong>Device</strong> &gt;
+                                <strong>Setup</strong> &gt; <strong>Operations</strong> &gt; <strong>Import named configuration snapshot</strong>, then click
+                                <strong>Commit</strong>.</p>
+                        </div>
+                    </div>
+
+                    <!-- Cisco FTD -->
+                    <div id="guide-ftd" class="guide-block">
+                        <h3>Cisco FTD (FMC) Integration Guide</h3>
+                        <div class="guide-section">
+                            <h4>How to Export Config</h4>
+                            <p>To export Access Control policies from the Firepower Management Center (FMC) GUI:</p>
+                            <p>1. Go to <strong>Policies</strong> &gt; <strong>Access Control</strong>.<br>
+                                2. Hover over the policy you want to export and click the <strong>Export</strong> icon/button.<br>
+                                3. Choose the export package containing the security rulebases and save the exported
+                                file.
+                            </p>
+                        </div>
+                        <div class="guide-section">
+                            <h4>How to Import / Apply Rules</h4>
+                            <p>Import policies or objects through the FMC UI under <strong>Policies</strong> &gt; <strong>Access Control</strong> &gt;
+                                <strong>Import</strong>, or leverage the FMC REST API to dynamically write rules.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DYNAMIC DATALISTS FOR COLUMN FILTERS -->
+    <datalist id="dl-id"></datalist>
+    <datalist id="dl-name"></datalist>
+    <datalist id="dl-srczone"></datalist>
+    <datalist id="dl-srcaddr"></datalist>
+    <datalist id="dl-dstaddr"></datalist>
+    <datalist id="dl-services"></datalist>
+    <datalist id="dl-action"></datalist>
+
+    <!-- JS Logic -->
+    <script>
+        let currentRules = [];
+        let currentNatRules = [];
+        let selectedFile = null;
+        let currentMode = 'security';
+
+        const samples = {
+            asa: `! Cisco ASA 5515x Running Configuration Sample
+! Generated for demo purposes
+object network WebServer_Internal
+ host 192.168.1.100
+object network DBServer_Internal
+ host 192.168.2.200
+object network Admin_PC
+ host 10.0.0.50
+object network MailServer_Internal
+ host 192.168.1.15
+object network Backup_Host
+ host 192.168.10.150
+object network Directory_Server
+ host 192.168.2.10
+object-group network Trusted_Corp_Nets
+ network-object 192.168.10.0 255.255.255.0
+ network-object 192.168.20.0 255.255.255.0
+object-group network DMZ_Nets
+ network-object 192.168.1.0 255.255.255.0
+
+access-list inside_in extended permit tcp object Admin_PC object WebServer_Internal eq 80
+access-list inside_in extended permit tcp object Admin_PC object WebServer_Internal eq 443
+access-list inside_in extended permit tcp object Admin_PC object MailServer_Internal eq 25
+access-list inside_in extended permit tcp object-group Trusted_Corp_Nets object DBServer_Internal eq 3306
+access-list inside_in extended permit tcp object-group Trusted_Corp_Nets object Backup_Host eq 22
+access-list inside_in extended permit tcp object-group Trusted_Corp_Nets object Directory_Server eq 389
+access-list inside_in extended permit udp object-group Trusted_Corp_Nets any eq 53
+access-list inside_in extended permit udp object-group Trusted_Corp_Nets any eq 123
+access-list outside_in extended permit tcp any object WebServer_Internal eq 80
+access-list outside_in extended permit tcp any object WebServer_Internal eq 443
+access-list outside_in extended permit tcp any object MailServer_Internal eq 25
+access-list global_access extended deny ip any any
+
+! Source dynamic NAT
+nat (inside,outside) source dynamic Trusted_Corp_Nets interface
+nat (inside,outside) source dynamic DMZ_Nets interface
+! Static mapping NAT
+nat (inside,outside) source static WebServer_Internal 203.0.113.100
+nat (inside,outside) source static MailServer_Internal 203.0.113.110
+nat (inside,outside) source static DBServer_Internal 203.0.113.120`,
+            checkpoint: `No.,Name,Source,Destination,Services & Applications,Action,Track,Comment
+1,AllowWebAccess,Any,WebServer_Internal,http,Accept,Log,Allows public web access
+2,AllowSecureWeb,Any,WebServer_Internal,https,Accept,Log,Allows secure public web access
+3,MailTraffic,Any,MailServer_Internal,smtp,Accept,Log,Allow inbound email flow
+4,DatabaseSync,Trusted_Corp_Nets,DBServer_Internal,mysql,Accept,Log,Allows sync from trusted networks
+5,BackupTransfer,Trusted_Corp_Nets,Backup_Host,ssh,Accept,Log,Secure SSH backups
+6,DirectoryAuth,Trusted_Corp_Nets,Directory_Server,ldap,Accept,Log,Internal authentication
+7,OutboundDNS,Trusted_Corp_Nets,Any,domain-udp,Accept,Log,Resolve hosts
+8,TimeSync,Any,Any,ntp,Accept,Log,NTP sync
+9,BlockSQLInjection,Any,DBServer_Internal,mysql,Drop,Log,Blocks public SQL attempts
+10,NAT_Source_Inside,Trusted_Corp_Nets,Any,Any,Accept,Log,Dynamic SNAT for inside network
+11,NAT_Source_DMZ,DMZ_Nets,Any,Any,Accept,Log,Dynamic SNAT for DMZ
+12,NAT_Static_Web,Any,203.0.113.100,Any,Accept,Log,Mapped to internal WebServer`,
+            fortigate: `# FortiGate V7.0 Configuration Sample
+# Multi-ruleset export
+config firewall address
+    edit "WebServer_Internal"
+        set subnet 192.168.1.100 255.255.255.255
+    next
+    edit "DBServer_Internal"
+        set subnet 192.168.2.200 255.255.255.255
+    next
+    edit "MailServer_Internal"
+        set subnet 192.168.1.15 255.255.255.255
+    next
+    edit "Trusted_Corp_Nets"
+        set subnet 192.168.10.0 255.255.255.0
+    next
+    edit "DMZ_Nets"
+        set subnet 192.168.1.0 255.255.255.0
+    next
+    edit "Backup_Host"
+        set subnet 192.168.10.150 255.255.255.255
+    next
+    edit "Directory_Server"
+        set subnet 192.168.2.10 255.255.255.255
+    next
+end
+
+config firewall vip
+    edit "VIP_WebServer"
+        set extip 203.0.113.100
+        set mappedip "192.168.1.100"
+    next
+    edit "VIP_MailServer"
+        set extip 203.0.113.110
+        set mappedip "192.168.1.15"
+    next
+    edit "VIP_DBServer"
+        set extip 203.0.113.120
+        set mappedip "192.168.2.200"
+    next
+end
+
+config firewall policy
+    edit 101
+        set name "Public_Web_Access"
+        set srcintf "port1"
+        set dstintf "port2"
+        set srcaddr "all"
+        set dstaddr "VIP_WebServer"
+        set action accept
+        set service "HTTP" "HTTPS"
+        set nat enable
+    next
+    edit 102
+        set name "Public_Mail_Access"
+        set srcintf "port1"
+        set dstintf "port2"
+        set srcaddr "all"
+        set dstaddr "VIP_MailServer"
+        set action accept
+        set service "SMTP"
+        set nat enable
+    next
+    edit 103
+        set name "Database_Access"
+        set srcintf "port2"
+        set dstintf "port2"
+        set srcaddr "Trusted_Corp_Nets"
+        set dstaddr "DBServer_Internal"
+        set action accept
+        set service "MYSQL"
+    next
+    edit 104
+        set name "Block_Public_DB"
+        set srcintf "port1"
+        set dstintf "port2"
+        set srcaddr "all"
+        set dstaddr "DBServer_Internal"
+        set action deny
+        set service "MYSQL"
+    next
+    edit 105
+        set name "Corporate_DNS_Flow"
+        set srcintf "port2"
+        set dstintf "port1"
+        set srcaddr "Trusted_Corp_Nets"
+        set dstaddr "all"
+        set action accept
+        set service "DNS"
+    next
+    edit 106
+        set name "DMZ_DNS_Flow"
+        set srcintf "port2"
+        set dstintf "port1"
+        set srcaddr "DMZ_Nets"
+        set dstaddr "all"
+        set action accept
+        set service "DNS"
+    next
+    edit 107
+        set name "Inside_SSH_Access"
+        set srcintf "port2"
+        set dstintf "port2"
+        set srcaddr "Trusted_Corp_Nets"
+        set dstaddr "Backup_Host"
+        set action accept
+        set service "SSH"
+    next
+    edit 108
+        set name "NTP_Sync"
+        set srcintf "port2"
+        set dstintf "port1"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action accept
+        set service "NTP"
+    next
+    edit 109
+        set name "Outbound_Web"
+        set srcintf "port2"
+        set dstintf "port1"
+        set srcaddr "Trusted_Corp_Nets"
+        set dstaddr "all"
+        set action accept
+        set service "HTTP" "HTTPS"
+    next
+    edit 110
+        set name "Directory_Auth"
+        set srcintf "port2"
+        set dstintf "port2"
+        set srcaddr "Trusted_Corp_Nets"
+        set dstaddr "Directory_Server"
+        set action accept
+        set service "LDAP"
+    next
+    edit 111
+        set name "Default_Deny_All"
+        set srcintf "any"
+        set dstintf "any"
+        set srcaddr "all"
+        set dstaddr "all"
+        set action deny
+        set service "ALL"
+    next
+end`,
+            paloalto: `<config>
+  <devices>
+    <entry name="localhost">
+      <vsys>
+        <entry name="vsys1">
+          <address>
+            <entry name="WebServer_Internal">
+              <ip-netmask>192.168.1.100/32</ip-netmask>
+            </entry>
+            <entry name="DBServer_Internal">
+              <ip-netmask>192.168.2.200/32</ip-netmask>
+            </entry>
+            <entry name="MailServer_Internal">
+              <ip-netmask>192.168.1.15/32</ip-netmask>
+            </entry>
+            <entry name="Trusted_Corp_Nets">
+              <ip-netmask>192.168.10.0/24</ip-netmask>
+            </entry>
+            <entry name="DMZ_Nets">
+              <ip-netmask>192.168.1.0/24</ip-netmask>
+            </entry>
+            <entry name="Backup_Host">
+              <ip-netmask>192.168.10.150/32</ip-netmask>
+            </entry>
+            <entry name="Directory_Server">
+              <ip-netmask>192.168.2.10/32</ip-netmask>
+            </entry>
+          </address>
+          <rulebase>
+            <security>
+              <rules>
+                <entry name="Public-Web-Access">
+                  <from><member>Outside</member></from>
+                  <to><member>Inside</member></to>
+                  <source><member>any</member></source>
+                  <destination><member>WebServer_Internal</member></destination>
+                  <service><member>service-http</member><member>service-https</member></service>
+                  <action>allow</action>
+                </entry>
+                <entry name="Public-Mail-Access">
+                  <from><member>Outside</member></from>
+                  <to><member>Inside</member></to>
+                  <source><member>any</member></source>
+                  <destination><member>MailServer_Internal</member></destination>
+                  <service><member>service-smtp</member></service>
+                  <action>allow</action>
+                </entry>
+                <entry name="Database-Sync">
+                  <from><member>Inside</member></from>
+                  <to><member>Inside</member></to>
+                  <source><member>Trusted_Corp_Nets</member></source>
+                  <destination><member>DBServer_Internal</member></destination>
+                  <service><member>service-mysql</member></service>
+                  <action>allow</action>
+                </entry>
+                <entry name="DNS-Access">
+                  <from><member>Inside</member></from>
+                  <to><member>Outside</member></to>
+                  <source><member>Trusted_Corp_Nets</member></source>
+                  <destination><member>any</member></destination>
+                  <service><member>service-dns</member></service>
+                  <action>allow</action>
+                </entry>
+                <entry name="NTP-Access">
+                  <from><member>Inside</member></from>
+                  <to><member>Outside</member></to>
+                  <source><member>any</member></source>
+                  <destination><member>any</member></destination>
+                  <service><member>service-ntp</member></service>
+                  <action>allow</action>
+                </entry>
+                <entry name="SSH-Admin">
+                  <from><member>Inside</member></from>
+                  <to><member>Inside</member></to>
+                  <source><member>Trusted_Corp_Nets</member></source>
+                  <destination><member>Backup_Host</member></destination>
+                  <service><member>service-ssh</member></service>
+                  <action>allow</action>
+                </entry>
+                <entry name="Outbound-HTTP">
+                  <from><member>Inside</member></from>
+                  <to><member>Outside</member></to>
+                  <source><member>Trusted_Corp_Nets</member></source>
+                  <destination><member>any</member></destination>
+                  <service><member>service-http</member><member>service-https</member></service>
+                  <action>allow</action>
+                </entry>
+                <entry name="Mail-Submission">
+                  <from><member>Inside</member></from>
+                  <to><member>Inside</member></to>
+                  <source><member>Trusted_Corp_Nets</member></source>
+                  <destination><member>MailServer_Internal</member></destination>
+                  <service><member>service-submission</member></service>
+                  <action>allow</action>
+                </entry>
+                <entry name="LDAP-Auth">
+                  <from><member>Inside</member></from>
+                  <to><member>Inside</member></to>
+                  <source><member>Trusted_Corp_Nets</member></source>
+                  <destination><member>Directory_Server</member></destination>
+                  <service><member>service-ldap</member></service>
+                  <action>allow</action>
+                </entry>
+                <entry name="Default-Deny">
+                  <from><member>any</member></from>
+                  <to><member>any</member></to>
+                  <source><member>any</member></source>
+                  <destination><member>any</member></destination>
+                  <service><member>any</member></service>
+                  <action>deny</action>
+                </entry>
+              </rules>
+            </security>
+            <nat>
+              <rules>
+                <entry name="Source-SNAT-Corp">
+                  <from><member>Inside</member></from>
+                  <to><member>Outside</member></to>
+                  <source><member>Trusted_Corp_Nets</member></source>
+                  <destination><member>any</member></destination>
+                  <service>any</service>
+                  <source-translation>
+                    <dynamic-ip-and-port>
+                      <translated-address><member>203.0.113.10</member></translated-address>
+                    </dynamic-ip-and-port>
+                  </source-translation>
+                </entry>
+                <entry name="Source-SNAT-DMZ">
+                  <from><member>Inside</member></from>
+                  <to><member>Outside</member></to>
+                  <source><member>DMZ_Nets</member></source>
+                  <destination><member>any</member></destination>
+                  <service>any</service>
+                  <source-translation>
+                    <dynamic-ip-and-port>
+                      <translated-address><member>203.0.113.11</member></translated-address>
+                    </dynamic-ip-and-port>
+                  </source-translation>
+                </entry>
+                <entry name="Static-DNAT-Web">
+                  <from><member>Outside</member></from>
+                  <to><member>Inside</member></to>
+                  <source><member>any</member></source>
+                  <destination><member>203.0.113.100</member></destination>
+                  <service>any</service>
+                  <destination-translation>
+                    <translated-address>192.168.1.100</translated-address>
+                  </destination-translation>
+                </entry>
+                <entry name="Static-DNAT-Mail">
+                  <from><member>Outside</member></from>
+                  <to><member>Inside</member></to>
+                  <source><member>any</member></source>
+                  <destination><member>203.0.113.110</member></destination>
+                  <service>any</service>
+                  <destination-translation>
+                    <translated-address>192.168.1.15</translated-address>
+                  </destination-translation>
+                </entry>
+              </rules>
+            </nat>
+          </rulebase>
+        </entry>
+      </vsys>
+    </entry>
+  </devices>
+</config>`,
+            ftd: `{
+    "items": [
+        {
+            "name": "Public-Web-Access",
+            "action": "ALLOW",
+            "sourceZones": [{"name": "Outside_Zone"}],
+            "destinationZones": [{"name": "Inside_Zone"}],
+            "sourceNetworks": {"objects": [{"name": "Any"}]},
+            "destinationNetworks": {"objects": [{"name": "WebServer_Internal"}]},
+            "destinationPorts": {"objects": [{"name": "HTTP"}, {"name": "HTTPS"}]}
+        },
+        {
+            "name": "Public-Mail-Access",
+            "action": "ALLOW",
+            "sourceZones": [{"name": "Outside_Zone"}],
+            "destinationZones": [{"name": "Inside_Zone"}],
+            "sourceNetworks": {"objects": [{"name": "Any"}]},
+            "destinationNetworks": {"objects": [{"name": "MailServer_Internal"}]},
+            "destinationPorts": {"objects": [{"name": "SMTP"}]}
+        },
+        {
+            "name": "Database-Access",
+            "action": "ALLOW",
+            "sourceZones": [{"name": "Inside_Zone"}],
+            "destinationZones": [{"name": "Inside_Zone"}],
+            "sourceNetworks": {"objects": [{"name": "Trusted_Corp_Nets"}]},
+            "destinationNetworks": {"objects": [{"name": "DBServer_Internal"}]},
+            "destinationPorts": {"objects": [{"name": "MYSQL_Port"}]}
+        },
+        {
+            "name": "DNS-Access",
+            "action": "ALLOW",
+            "sourceZones": [{"name": "Inside_Zone"}],
+            "destinationZones": [{"name": "Outside_Zone"}],
+            "sourceNetworks": {"objects": [{"name": "Trusted_Corp_Nets"}]},
+            "destinationNetworks": {"objects": [{"name": "Any"}]},
+            "destinationPorts": {"objects": [{"name": "DNS_Port"}]}
+        },
+        {
+            "name": "NTP-Access",
+            "action": "ALLOW",
+            "sourceZones": [{"name": "Inside_Zone"}],
+            "destinationZones": [{"name": "Outside_Zone"}],
+            "sourceNetworks": {"objects": [{"name": "Any"}]},
+            "destinationNetworks": {"objects": [{"name": "Any"}]},
+            "destinationPorts": {"objects": [{"name": "NTP_Port"}]}
+        },
+        {
+            "name": "SSH-Admin",
+            "action": "ALLOW",
+            "sourceZones": [{"name": "Inside_Zone"}],
+            "destinationZones": [{"name": "Inside_Zone"}],
+            "sourceNetworks": {"objects": [{"name": "Trusted_Corp_Nets"}]},
+            "destinationNetworks": {"objects": [{"name": "Backup_Host"}]},
+            "destinationPorts": {"objects": [{"name": "SSH_Port"}]}
+        },
+        {
+            "name": "Outbound-HTTP",
+            "action": "ALLOW",
+            "sourceZones": [{"name": "Inside_Zone"}],
+            "destinationZones": [{"name": "Outside_Zone"}],
+            "sourceNetworks": {"objects": [{"name": "Trusted_Corp_Nets"}]},
+            "destinationNetworks": {"objects": [{"name": "Any"}]},
+            "destinationPorts": {"objects": [{"name": "HTTP"}, {"name": "HTTPS"}]}
+        },
+        {
+            "name": "Mail-Submission",
+            "action": "ALLOW",
+            "sourceZones": [{"name": "Inside_Zone"}],
+            "destinationZones": [{"name": "Inside_Zone"}],
+            "sourceNetworks": {"objects": [{"name": "Trusted_Corp_Nets"}]},
+            "destinationNetworks": {"objects": [{"name": "MailServer_Internal"}]},
+            "destinationPorts": {"objects": [{"name": "Submission_Port"}]}
+        },
+        {
+            "name": "LDAP-Auth",
+            "action": "ALLOW",
+            "sourceZones": [{"name": "Inside_Zone"}],
+            "destinationZones": [{"name": "Inside_Zone"}],
+            "sourceNetworks": {"objects": [{"name": "Trusted_Corp_Nets"}]},
+            "destinationNetworks": {"objects": [{"name": "Directory_Server"}]},
+            "destinationPorts": {"objects": [{"name": "LDAP_Port"}]}
+        },
+        {
+            "name": "Default-Deny",
+            "action": "DENY",
+            "sourceZones": [{"name": "Any"}],
+            "destinationZones": [{"name": "Any"}],
+            "sourceNetworks": {"objects": [{"name": "Any"}]},
+            "destinationNetworks": {"objects": [{"name": "Any"}]},
+            "destinationPorts": {"objects": [{"name": "Any"}]}
+        }
+    ],
+    "nat": [
+        {
+            "name": "Dynamic-SNAT-Corp",
+            "type": "Source NAT (Dynamic)",
+            "orig_src": ["Trusted_Corp_Nets"],
+            "trans_src": ["Outside_Interface"],
+            "orig_dst": ["any"],
+            "trans_dst": ["Original"],
+            "orig_svc": ["any"],
+            "trans_svc": ["Original"]
+        },
+        {
+            "name": "Static-DNAT-Web",
+            "type": "Static NAT",
+            "orig_src": ["any"],
+            "trans_src": ["Original"],
+            "orig_dst": ["203.0.113.100"],
+            "trans_dst": ["WebServer_Internal"],
+            "orig_svc": ["any"],
+            "trans_svc": ["Original"]
+        },
+        {
+            "name": "Static-DNAT-Mail",
+            "type": "Static NAT",
+            "orig_src": ["any"],
+            "trans_src": ["Original"],
+            "orig_dst": ["203.0.113.110"],
+            "trans_dst": ["MailServer_Internal"],
+            "orig_svc": ["any"],
+            "trans_svc": ["Original"]
+        }
+    ]
+}`
+        };
+
+        // DROPDOWN SAMPLE SELECTOR HANDLER
+        function loadSelectedSample(selectEl) {
+            const brand = selectEl.value;
+            if (!brand) return;
+
+            // Set the Source Brand Select value to match the sample
+            document.getElementById('firewall-type').value = brand;
+
+            const text = samples[brand] || '';
+            const file = new File([text], `sample_${brand}.txt`, { type: "text/plain" });
+            setFile(file);
+
+            const display = document.getElementById('file-name-display');
+            display.textContent = `Loaded sample_${brand}.txt`;
+            display.style.display = 'inline-block';
+
+            // Highlight the Source Brand select to show it synced
+            const typeSelect = document.getElementById('firewall-type');
+            typeSelect.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+            setTimeout(() => {
+                typeSelect.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+            }, 1000);
+
+            // Auto run parser immediately
+            submitParse();
+
+            // Reset samples select dropdown to placeholder for clean look
+            selectEl.value = "";
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            if (tabId === 'dashboard') {
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+                document.getElementById('dashboard-tab').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+                document.getElementById('guides-tab').classList.add('active');
+            }
+        }
+
+        // Guide Switching Logic
+        function switchGuide(btnEl, guideId) {
+            document.querySelectorAll('.guide-menu-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.guide-block').forEach(block => block.classList.remove('active'));
+
+            btnEl.classList.add('active');
+            document.getElementById(guideId).classList.add('active');
+        }
+
+        function handleFileSelect(input) {
+            if (input.files.length > 0) {
+                const file = input.files[0];
+                setFile(file);
+
+                // Read a snippet of the file to auto-detect the brand
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const content = e.target.result;
+                    const detected = autoDetectBrand(content);
+                    if (detected) {
+                        document.getElementById('firewall-type').value = detected;
+
+                        const selectEl = document.getElementById('firewall-type');
+                        selectEl.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                        setTimeout(() => {
+                            selectEl.style.borderColor = 'rgba(255, 255, 255, 0.08)';
+                        }, 1500);
+                    }
+                };
+                reader.readAsText(file.slice(0, 50000));
+            }
+        }
+
+        function setFile(file) {
+            selectedFile = file;
+            const display = document.getElementById('file-name-display');
+            display.textContent = `${file.name}`;
+            display.style.display = 'inline-block';
+        }
+
+        // Robust Casing-Insensitive Fuzzy Auto-Detection Algorithm
+        function autoDetectBrand(content) {
+            const lower = content.toLowerCase();
+
+            // 1. Palo Alto XML check
+            if (lower.includes('<vsys') || lower.includes('<devices>') || (lower.includes('<config>') && lower.includes('<entry'))) {
+                return 'paloalto';
+            }
+
+            // 2. Check Point CSV check
+            if (lower.includes('services & applications') || (lower.includes('source') && lower.includes('destination') && lower.includes('action') && lower.includes('track'))) {
+                return 'checkpoint';
+            }
+
+            // 3. FortiGate CLI check
+            if (lower.includes('config firewall') || lower.includes('set srcaddr') || lower.includes('set dstaddr') || lower.includes('set srcintf')) {
+                return 'fortigate';
+            }
+
+            // 4. Cisco ASA CLI check
+            if (lower.includes('access-list') || lower.includes('object network') || lower.includes('object-group network')) {
+                return 'asa';
+            }
+
+            // 5. FTD FMC check
+            if (lower.includes('sourcenetworks') || lower.includes('destinationnetworks') || lower.includes('source networks') || lower.includes('destination networks')) {
+                return 'ftd';
+            }
+
+            return null;
+        }
+
+        // Submit to Parse API
+        function submitParse() {
+            if (!selectedFile) {
+                alert('Please select or upload a configuration file first.');
+                return;
+            }
+
+            const parseBtn = document.getElementById('parse-button');
+            parseBtn.disabled = true;
+            parseBtn.textContent = 'Executing...';
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('type', document.getElementById('firewall-type').value);
+
+            fetch('/api/parse', {
+                method: 'POST',
+                body: formData
+            })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error('Parsing failed. Please verify format.');
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    currentRules = data.rules || [];
+                    currentNatRules = data.nat || [];
+                    populateDatalists(currentRules);
+                    clearFilters();
+                    setViewMode(currentMode);
+                    convertRules();
+                })
+                .catch(err => {
+                    alert(err.message);
+                })
+                .finally(() => {
+                    parseBtn.disabled = false;
+                    parseBtn.textContent = 'Execute';
+                });
+        }
+
+        // Populate dropdown options inside Datalists based on loaded rules
+        function populateDatalists(rules) {
+            const dlMap = {
+                'dl-id': new Set(),
+                'dl-name': new Set(),
+                'dl-srczone': new Set(),
+                'dl-srcaddr': new Set(),
+                'dl-dstaddr': new Set(),
+                'dl-services': new Set(),
+                'dl-action': new Set()
+            };
+
+            rules.forEach(rule => {
+                dlMap['dl-id'].add(rule.id);
+                dlMap['dl-name'].add(rule.name);
+                if (rule.src_zones) rule.src_zones.forEach(z => dlMap['dl-srczone'].add(z));
+                if (rule.src_addrs) rule.src_addrs.forEach(a => dlMap['dl-srcaddr'].add(a));
+                if (rule.dst_addrs) rule.dst_addrs.forEach(a => dlMap['dl-dstaddr'].add(a));
+                if (rule.services) rule.services.forEach(s => dlMap['dl-services'].add(s));
+                dlMap['dl-action'].add(rule.action);
+            });
+
+            for (const [id, valueSet] of Object.entries(dlMap)) {
+                const dl = document.getElementById(id);
+                dl.replaceChildren();
+                valueSet.forEach(val => {
+                    if (val) {
+                        const opt = document.createElement('option');
+                        opt.value = val;
+                        dl.appendChild(opt);
+                    }
+                });
+            }
+        }
+
+        function clearFilters() {
+            document.querySelectorAll('.col-filter').forEach(input => input.value = '');
+        }
+
+        // Render table rows
+        function renderRulesTable(rulesList) {
+            const tbody = document.getElementById('policy-rows');
+            tbody.replaceChildren();
+
+            if (rulesList.length === 0) {
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.setAttribute('colspan', '7');
+                td.style.textAlign = 'center';
+                td.style.color = 'var(--text-secondary)';
+                td.style.padding = '4rem 1rem';
+                td.textContent = 'No rules match filter or none parsed.';
+                tr.appendChild(td);
+                tbody.appendChild(tr);
+                return;
+            }
+
+            rulesList.forEach(rule => {
+                const tr = document.createElement('tr');
+
+                const tdId = document.createElement('td');
+                tdId.textContent = rule.id;
+                tr.appendChild(tdId);
+
+                const tdName = document.createElement('td');
+                tdName.textContent = rule.name || `Rule_${rule.id}`;
+                tr.appendChild(tdName);
+
+                const tdSrcZone = document.createElement('td');
+                tdSrcZone.textContent = rule.src_zones ? rule.src_zones.join(', ') : 'Any';
+                tr.appendChild(tdSrcZone);
+
+                const tdSrcAddr = document.createElement('td');
+                tdSrcAddr.replaceChildren();
+                if (rule.src_addrs) {
+                    rule.src_addrs.forEach(addr => {
+                        const tag = document.createElement('span');
+                        tag.className = 'object-tag';
+                        tag.textContent = addr;
+                        tdSrcAddr.appendChild(tag);
+                    });
+                }
+                tr.appendChild(tdSrcAddr);
+
+                const tdDstAddr = document.createElement('td');
+                tdDstAddr.replaceChildren();
+                if (rule.dst_addrs) {
+                    rule.dst_addrs.forEach(addr => {
+                        const tag = document.createElement('span');
+                        tag.className = 'object-tag';
+                        tag.textContent = addr;
+                        tdDstAddr.appendChild(tag);
+                    });
+                }
+                tr.appendChild(tdDstAddr);
+
+                const tdServices = document.createElement('td');
+                tdServices.replaceChildren();
+                if (rule.services) {
+                    rule.services.forEach(svc => {
+                        const tag = document.createElement('span');
+                        tag.className = 'object-tag';
+                        tag.textContent = svc;
+                        tdServices.appendChild(tag);
+                    });
+                }
+                tr.appendChild(tdServices);
+
+                const tdAction = document.createElement('td');
+                const badge = document.createElement('span');
+                badge.className = `badge-action ${rule.action.toLowerCase()}`;
+                badge.textContent = rule.action;
+                tdAction.appendChild(badge);
+                tr.appendChild(tdAction);
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        // TOGGLE WORKSPACE VIEW MODES (Security vs NAT)
+        function setViewMode(mode) {
+            currentMode = mode;
+            const secBtn = document.getElementById('view-security-btn');
+            const natBtn = document.getElementById('view-nat-btn');
+
+            if (secBtn) secBtn.classList.remove('active');
+            if (natBtn) natBtn.classList.remove('active');
+
+            if (mode === 'security') {
+                if (secBtn) secBtn.classList.add('active');
+                document.getElementById('table-headers-row').innerHTML = `
+                    <th style="width: 50px;">ID</th>
+                    <th>Name</th>
+                    <th>Src Zone</th>
+                    <th>Src Address</th>
+                    <th>Dst Address</th>
+                    <th>Services</th>
+                    <th style="width: 70px;">Action</th>
+                `;
+                document.getElementById('table-filters-row').innerHTML = `
+                    <th><input type="text" class="col-filter" id="filter-id" list="dl-id" placeholder="ID..." oninput="filterRules()"></th>
+                    <th><input type="text" class="col-filter" id="filter-name" list="dl-name" placeholder="Name..." oninput="filterRules()"></th>
+                    <th><input type="text" class="col-filter" id="filter-srczone" list="dl-srczone" placeholder="Zone..." oninput="filterRules()"></th>
+                    <th><input type="text" class="col-filter" id="filter-srcaddr" list="dl-srcaddr" placeholder="Source..." oninput="filterRules()"></th>
+                    <th><input type="text" class="col-filter" id="filter-dstaddr" list="dl-dstaddr" placeholder="Dest..." oninput="filterRules()"></th>
+                    <th><input type="text" class="col-filter" id="filter-services" list="dl-services" placeholder="Port..." oninput="filterRules()"></th>
+                    <th><input type="text" class="col-filter" id="filter-action" list="dl-action" placeholder="Action..." oninput="filterRules()"></th>
+                `;
+                renderRulesTable(currentRules);
+            } else {
+                if (natBtn) natBtn.classList.add('active');
+                document.getElementById('table-headers-row').innerHTML = `
+                    <th style="width: 50px;">ID</th>
+                    <th>Rule Name</th>
+                    <th>Type</th>
+                    <th>Original Source</th>
+                    <th>Translated Source</th>
+                    <th>Original Dest</th>
+                    <th>Translated Dest</th>
+                    <th>Original Port</th>
+                    <th>Translated Port</th>
+                `;
+                document.getElementById('table-filters-row').innerHTML = `
+                    <th colspan="9" style="text-align: center; font-size: 0.7rem; color: var(--text-secondary); padding: 0.2rem; font-weight: normal;">NAT Policy translation entries</th>
+                `;
+                renderNatRulesTable(currentNatRules);
+            }
+        }
+
+        // Render NAT Rules Grid Table
+        function renderNatRulesTable(natList) {
+            const tbody = document.getElementById('policy-rows');
+            tbody.replaceChildren();
+
+            if (natList.length === 0) {
+                const tr = document.createElement('tr');
+                const td = document.createElement('td');
+                td.setAttribute('colspan', '9');
+                td.style.textAlign = 'center';
+                td.style.color = 'var(--text-secondary)';
+                td.style.padding = '4rem 1rem';
+                td.textContent = 'No NAT policy rules resolved from configuration.';
+                tr.appendChild(td);
+                tbody.appendChild(tr);
+                return;
+            }
+
+            natList.forEach(rule => {
+                const tr = document.createElement('tr');
+
+                const tdId = document.createElement('td');
+                tdId.textContent = rule.id;
+                tr.appendChild(tdId);
+
+                const tdName = document.createElement('td');
+                tdName.textContent = rule.name;
+                tr.appendChild(tdName);
+
+                const tdType = document.createElement('td');
+                const tBadge = document.createElement('span');
+                tBadge.className = 'badge-action allow';
+                tBadge.textContent = rule.type;
+                tdType.appendChild(tBadge);
+                tr.appendChild(tdType);
+
+                const makeTagsCell = (addrs) => {
+                    const td = document.createElement('td');
+                    if (addrs) {
+                        addrs.forEach(a => {
+                            const tag = document.createElement('span');
+                            tag.className = 'object-tag';
+                            tag.textContent = a;
+                            td.appendChild(tag);
+                        });
+                    }
+                    return td;
+                };
+
+                tr.appendChild(makeTagsCell(rule.orig_src));
+                tr.appendChild(makeTagsCell(rule.trans_src));
+                tr.appendChild(makeTagsCell(rule.orig_dst));
+                tr.appendChild(makeTagsCell(rule.trans_dst));
+                tr.appendChild(makeTagsCell(rule.orig_svc));
+                tr.appendChild(makeTagsCell(rule.trans_svc));
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Multi-Column-Based Filtering Search
+        function filterRules() {
+            const filterId = document.getElementById('filter-id').value.toLowerCase();
+            const filterName = document.getElementById('filter-name').value.toLowerCase();
+            const filterSrcZone = document.getElementById('filter-srczone').value.toLowerCase();
+            const filterSrcAddr = document.getElementById('filter-srcaddr').value.toLowerCase();
+            const filterDstAddr = document.getElementById('filter-dstaddr').value.toLowerCase();
+            const filterServices = document.getElementById('filter-services').value.toLowerCase();
+            const filterAction = document.getElementById('filter-action').value.toLowerCase();
+
+            const filtered = currentRules.filter(rule => {
+                const idMatch = String(rule.id).toLowerCase().includes(filterId);
+                const nameMatch = (rule.name || '').toLowerCase().includes(filterName);
+                const srcZoneMatch = (rule.src_zones || []).join(' ').toLowerCase().includes(filterSrcZone);
+                const srcAddrMatch = (rule.src_addrs || []).join(' ').toLowerCase().includes(filterSrcAddr);
+                const dstAddrMatch = (rule.dst_addrs || []).join(' ').toLowerCase().includes(filterDstAddr);
+                const servicesMatch = (rule.services || []).join(' ').toLowerCase().includes(filterServices);
+                const actionMatch = (rule.action || '').toLowerCase().includes(filterAction);
+
+                return idMatch && nameMatch && srcZoneMatch && srcAddrMatch && dstAddrMatch && servicesMatch && actionMatch;
+            });
+
+            renderRulesTable(filtered);
+        }
+
+        // DYNAMIC CONVERSION & EXPORT LOGIC
+        function convertRules() {
+            const target = document.getElementById('target-brand').value;
+            const container = document.getElementById('converted-code-box');
+
+            if (currentRules.length === 0) {
+                container.innerHTML = '<span class="convert-instruction">Import a config first to convert.</span>';
+                return;
+            }
+
+            let outputText = '';
+            const timestamp = new Date().toISOString().split('T')[0];
+
+            if (target === 'yaml') {
+                outputText += `# Generated by FWConvert on ${timestamp}\n`;
+                outputText += `# Target Format: Normalized YAML\n\n`;
+                outputText += `rules:\n`;
+                currentRules.forEach(rule => {
+                    outputText += `  - id: "${rule.id}"\n`;
+                    outputText += `    name: "${rule.name || ''}"\n`;
+                    outputText += `    src_zones:\n`;
+                    (rule.src_zones || []).forEach(z => {
+                        outputText += `      - "${z}"\n`;
+                    });
+                    outputText += `    dst_zones:\n`;
+                    (rule.dst_zones || []).forEach(z => {
+                        outputText += `      - "${z}"\n`;
+                    });
+                    outputText += `    src_addrs:\n`;
+                    (rule.src_addrs || []).forEach(a => {
+                        outputText += `      - "${a}"\n`;
+                    });
+                    outputText += `    dst_addrs:\n`;
+                    (rule.dst_addrs || []).forEach(a => {
+                        outputText += `      - "${a}"\n`;
+                    });
+                    outputText += `    services:\n`;
+                    (rule.services || []).forEach(s => {
+                        outputText += `      - "${s}"\n`;
+                    });
+                    outputText += `    action: "${rule.action}"\n`;
+                    outputText += `    comment: "${(rule.comment || '').replace(/"/g, '\\"')}"\n`;
+                });
+            } else if (target === 'asa') {
+                outputText += `! Generated by FWConvert on ${timestamp}\n`;
+                outputText += `! Target Format: Cisco ASA CLI\n\n`;
+                currentRules.forEach(rule => {
+                    const action = rule.action === 'allow' ? 'permit' : 'deny';
+                    const srcStr = rule.src_addrs.join(' ');
+                    const dstStr = rule.dst_addrs.join(' ');
+                    const protocol = rule.services[0] && rule.services[0].toLowerCase().includes('tcp') ? 'tcp' : 'ip';
+
+                    outputText += `access-list CONVERTED_ACL extended ${action} ${protocol} `;
+                    if (srcStr.toLowerCase() === 'any') outputText += 'any ';
+                    else if (srcStr.includes('.')) outputText += `host ${srcStr.split(',')[0]} `;
+                    else outputText += `object ${srcStr.split(',')[0]} `;
+
+                    if (dstStr.toLowerCase() === 'any') outputText += 'any';
+                    else if (dstStr.includes('.')) outputText += ` host ${dstStr.split(',')[0]}`;
+                    else outputText += ` object ${dstStr.split(',')[0]}`;
+
+                    if (rule.services[0] && rule.services[0].toLowerCase() !== 'any' && rule.services[0].toLowerCase() !== 'all') {
+                        const svc = rule.services[0];
+                        if (svc.includes('/')) {
+                            outputText += ` eq ${svc.split('/')[1]}`;
+                        } else {
+                            outputText += ` eq ${svc}`;
+                        }
+                    }
+                    outputText += `\n`;
+                });
+            } else if (target === 'fortigate') {
+                outputText += `# Generated by FWConvert on ${timestamp}\n`;
+                outputText += `# Target Format: FortiGate CLI\n\n`;
+                outputText += `config firewall policy\n`;
+                currentRules.forEach((rule, idx) => {
+                    const action = rule.action === 'allow' ? 'accept' : 'deny';
+                    outputText += `    edit ${idx + 1}\n`;
+                    outputText += `        set name "Conv_${rule.name || idx + 1}"\n`;
+                    outputText += `        set srcintf "${rule.src_zones[0] || 'any'}"\n`;
+                    outputText += `        set dstintf "${rule.dst_zones[0] || 'any'}"\n`;
+                    outputText += `        set srcaddr "${rule.src_addrs[0] || 'all'}"\n`;
+                    outputText += `        set dstaddr "${rule.dst_addrs[0] || 'all'}"\n`;
+                    outputText += `        set action ${action}\n`;
+                    outputText += `        set status enable\n`;
+                    outputText += `        set service "${rule.services[0] || 'ALL'}"\n`;
+                    outputText += `        set comments "Converted from: ${rule.comment || ''}"\n`;
+                    outputText += `    next\n`;
+                });
+                outputText += `end\n`;
+            } else if (target === 'paloalto') {
+                outputText += `# Generated by FWConvert on ${timestamp}\n`;
+                outputText += `# Target Format: Palo Alto PAN-OS CLI Sets\n\n`;
+                currentRules.forEach(rule => {
+                    const rName = (rule.name || `Rule_${rule.id}`).replace(/\s+/g, '_');
+                    const action = rule.action === 'allow' ? 'allow' : 'deny';
+                    const fromZone = rule.src_zones[0] || 'any';
+                    const toZone = rule.dst_zones[0] || 'any';
+
+                    outputText += `set rulebase security rules ${rName} from ${fromZone} to ${toZone} `;
+                    outputText += `source [ ${rule.src_addrs.join(' ')} ] destination [ ${rule.dst_addrs.join(' ')} ] `;
+                    outputText += `service [ ${rule.services.join(' ')} ] action ${action} description "${rule.comment || ''}"\n`;
+                });
+            } else if (target === 'checkpoint') {
+                outputText += `# Generated by FWConvert on ${timestamp}\n`;
+                outputText += `# Target Format: Check Point mgmt_cli Commands\n\n`;
+                currentRules.forEach((rule, idx) => {
+                    const action = rule.action === 'allow' ? 'Accept' : 'Drop';
+                    outputText += `mgmt_cli add access-rule layer "Network" position ${idx + 1} `;
+                    outputText += `name "Conv_${rule.name || rule.id}" source "${rule.src_addrs[0] || 'Any'}" `;
+                    outputText += `destination "${rule.dst_addrs[0] || 'Any'}" service "${rule.services[0] || 'Any'}" `;
+                    outputText += `action "${action}" --port 19009\n`;
+                });
+            } else if (target === 'ftd') {
+                const ftdItems = currentRules.map(rule => ({
+                    name: `Conv_${rule.name || rule.id}`,
+                    action: rule.action.toUpperCase() === 'ALLOW' ? 'ALLOW' : 'DENY',
+                    sourceZones: (rule.src_zones || []).map(z => ({ name: z })),
+                    destinationZones: (rule.dst_zones || []).map(z => ({ name: z })),
+                    sourceNetworks: { objects: (rule.src_addrs || []).map(a => ({ name: a })) },
+                    destinationNetworks: { objects: (rule.dst_addrs || []).map(a => ({ name: a })) },
+                    destinationPorts: { objects: (rule.services || []).map(s => ({ name: s })) }
+                }));
+                outputText = JSON.stringify({ items: ftdItems }, null, 4);
+            }
+
+            container.textContent = outputText;
+        }
+
+        function copyConvertedText() {
+            const code = document.getElementById('converted-code-box').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.querySelector('.convert-pane .copy-btn');
+                const oldText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = oldText;
+                }, 2000);
+            });
+        }
+
+        function copyText(btn) {
+            const code = btn.nextSibling.textContent || btn.parentElement.textContent.replace('Copy', '').trim();
+            navigator.clipboard.writeText(code).then(() => {
+                const oldText = btn.textContent;
+                btn.textContent = 'Copied!';
+                setTimeout(() => {
+                    btn.textContent = oldText;
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+
+</html>
